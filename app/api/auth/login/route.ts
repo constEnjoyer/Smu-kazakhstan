@@ -7,14 +7,17 @@ export async function POST(request: Request) {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
+    // Добавил data для логирования
     email,
     password,
   })
 
   if (error) {
+    console.error("Login error:", error.message) // Логируем ошибку
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
 
+  console.log("Login successful, session data:", data.session?.user?.email) // Логируем email пользователя
   return NextResponse.json({ message: "Login successful" }, { status: 200 })
 }

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Check, X, Eye, Building2, FileText, Plus, LogOut } from "lucide-react"
+import { Check, X, Eye, Building2, FileText, Plus, LogOut, Trash2 } from "lucide-react" // Добавил Trash2
 import { useToast } from "@/hooks/use-toast"
 import { CreateNewsModal } from "@/components/create-news-modal"
 import { useRouter } from "next/navigation"
@@ -51,7 +51,6 @@ export default function AdminPanelContent() {
 
   const fetchData = async () => {
     try {
-      // Запросы к API теперь выполняются из клиентского компонента
       const [smuResponse, newsResponse] = await Promise.all([fetch("/api/smu?includeAll=true"), fetch("/api/news")])
 
       if (smuResponse.ok) {
@@ -117,7 +116,37 @@ export default function AdminPanelContent() {
     }
   }
 
+  const handleDeleteSMU = async (smuId: string) => {
+    if (!confirm("Вы уверены, что хотите удалить этот СМУ? Это действие необратимо.")) {
+      return
+    }
+    try {
+      const response = await fetch(`/api/smu/${smuId}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        setSmuList((prev) => prev.filter((smu) => smu.id !== smuId))
+        toast({
+          title: "СМУ удален",
+          description: "СМУ успешно удален из системы.",
+        })
+      } else {
+        throw new Error("Failed to delete SMU")
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось удалить СМУ",
+        variant: "destructive",
+      })
+    }
+  }
+
   const handleDeleteNews = async (newsId: string) => {
+    if (!confirm("Вы уверены, что хотите удалить эту новость?")) {
+      return
+    }
     try {
       const response = await fetch(`/api/news/${newsId}`, {
         method: "DELETE",
@@ -335,6 +364,15 @@ export default function AdminPanelContent() {
                             <X className="w-4 h-4 mr-1" />
                             Отклонить
                           </Button>
+                          <Button
+                            onClick={() => handleDeleteSMU(smu.id)} // Добавлена кнопка удаления
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 border-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            Удалить
+                          </Button>
                         </div>
                       </div>
                     ))
@@ -364,6 +402,17 @@ export default function AdminPanelContent() {
                         </div>
                         <Badge className="bg-green-100 text-green-800">Одобрено</Badge>
                       </div>
+                      <div className="flex justify-end mt-4">
+                        <Button
+                          onClick={() => handleDeleteSMU(smu.id)} // Добавлена кнопка удаления
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 border-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Удалить
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -390,6 +439,17 @@ export default function AdminPanelContent() {
                           </p>
                         </div>
                         <Badge variant="destructive">Отклонено</Badge>
+                      </div>
+                      <div className="flex justify-end mt-4">
+                        <Button
+                          onClick={() => handleDeleteSMU(smu.id)} // Добавлена кнопка удаления
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 border-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Удалить
+                        </Button>
                       </div>
                     </div>
                   ))}
