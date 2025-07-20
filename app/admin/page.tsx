@@ -39,6 +39,7 @@ export default async function AdminPage() {
     data: { session },
   } = await supabase.auth.getSession()
 
+<<<<<<< HEAD
   console.log("AdminPage: Session status:", session ? "Active" : "Inactive") // Лог статуса сессии
   if (session) {
     console.log("AdminPage: User email:", session.user?.email) // Лог email пользователя, если сессия активна
@@ -47,6 +48,10 @@ export default async function AdminPage() {
   // Если сессии нет, перенаправляем на страницу входа
   if (!session) {
     console.log("AdminPage: No session found, redirecting to /login") // Лог перенаправления
+=======
+  // Если сессии нет, перенаправляем на страницу входа
+  if (!session) {
+>>>>>>> a40e5298817193180d81ad739962ef13c7e97ad8
     redirect("/login")
   }
 
